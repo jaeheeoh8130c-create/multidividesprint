@@ -1,0 +1,1324 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Times Sprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --bg-a:#241654;
+    --bg-b:#3B2472;
+    --bg-c:#6B3FA0;
+    --card:#FFFFFF;
+    --card-ink:#3C3C3C;
+    --muted:#777777;
+    --border:#E8E3F7;
+    --tile-bg:#F5F2FF;
+    --coral:#6B3FD1;
+    --coral-dark:#4E2CA0;
+    --coral-ink:#FFFFFF;
+    --blue:#1189C4;
+    --blue-dark:#0C6C99;
+    --amber:#FF9600;
+    --good:#3D8F00;
+    --good-soft:#E3F6D8;
+    --bad:#E5484D;
+    --bad-soft:#FBE2E1;
+    --chart-accuracy:#3D8F00;
+    --chart-speed:#1189C4;
+    --shadow: 0 16px 40px -16px rgba(30,15,70,0.35);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg-a:#0F0A28;
+      --bg-b:#1C1240;
+      --bg-c:#341D5C;
+      --card:#211A3D;
+      --card-ink:#EDEAF7;
+      --muted:#A9A1C7;
+      --border: rgba(255,255,255,0.14);
+      --tile-bg: rgba(255,255,255,0.07);
+      --good-soft: rgba(61,143,0,0.22);
+      --bad-soft: rgba(229,72,77,0.22);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg-a:#0F0A28;
+    --bg-b:#1C1240;
+    --bg-c:#341D5C;
+    --card:#211A3D;
+    --card-ink:#EDEAF7;
+    --muted:#A9A1C7;
+    --border: rgba(255,255,255,0.14);
+    --tile-bg: rgba(255,255,255,0.07);
+    --good-soft: rgba(61,143,0,0.22);
+    --bad-soft: rgba(229,72,77,0.22);
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    background: linear-gradient(165deg, var(--bg-a) 0%, var(--bg-b) 55%, var(--bg-c) 100%);
+    color: var(--card-ink);
+    font-family:'Nunito',system-ui,sans-serif;
+    padding:0 16px;
+  }
+  .mono{ font-family:'Nunito',sans-serif; font-variant-numeric: tabular-nums; }
+
+  .space-scene{ position:fixed; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+  .star{ position:absolute; background:#FFFFFF; border-radius:50%; opacity:0.75; }
+  .star.tw{ animation:twinkle 2.6s ease-in-out infinite; }
+  @keyframes twinkle{ 0%,100%{ opacity:0.25; } 50%{ opacity:0.95; } }
+  .planet{ position:absolute; border-radius:50%; }
+  .planet-a{ width:64px; height:64px; top:6%; right:8%; background:radial-gradient(circle at 32% 30%, #FFD9EC, #E86FB0 70%); box-shadow:0 0 24px -6px rgba(232,111,176,0.6); }
+  .planet-b{ width:40px; height:40px; bottom:16%; left:6%; background:radial-gradient(circle at 35% 30%, #DCEBFF, #6FA8E8 75%); box-shadow:0 0 18px -4px rgba(111,168,232,0.55); }
+  .planet-c{ position:absolute; width:34px; height:34px; bottom:5%; right:14%; border-radius:50%; background:radial-gradient(circle at 35% 30%, #FFF4D6, #FFC24B 75%); }
+  .planet-c::after{
+    content:""; position:absolute; left:-10px; top:47%; width:54px; height:10px; border-radius:50%;
+    border:2.5px solid rgba(255,196,75,0.75); transform:rotate(-18deg);
+  }
+  .planet-bob{ animation:planetBob 6s ease-in-out infinite; }
+  @keyframes planetBob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
+  @media (prefers-reduced-motion: reduce){
+    .star.tw{ animation:none; opacity:0.6; }
+    .planet-bob{ animation:none; }
+  }
+
+  .stage{ max-width:520px; margin:0 auto; padding-block:32px 48px; position:relative; z-index:1; }
+
+  .console{
+    background:var(--card); color:var(--card-ink);
+    border-radius:20px; border:1px solid var(--border); box-shadow:var(--shadow);
+    padding:22px 22px 26px;
+  }
+
+  .topline{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; min-height:22px; }
+  .brand{ font-family:'Nunito',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.16em; color:var(--muted); }
+  .account-badge{ display:flex; align-items:center; gap:6px; font-family:'Nunito',sans-serif; font-size:0.72rem; font-weight:700; color:var(--muted); }
+  .account-badge button{ background:none; border:none; color:var(--coral); font:inherit; cursor:pointer; text-decoration:underline; padding:0; }
+
+  .screen[hidden]{ display:none; }
+
+  /* ---------- Account select & admin ---------- */
+  .account-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
+  .account-tile{
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:'Nunito',sans-serif; font-weight:800; font-size:1.1rem;
+    background:var(--tile-bg); border:2px solid var(--border); color:var(--card-ink);
+    border-radius:14px; padding:14px 16px; cursor:pointer; text-align:left; width:100%;
+  }
+  .account-tile::after{ content:"→"; color:var(--muted); font-family:'Nunito',sans-serif; }
+  .account-tile:hover{ border-color:var(--coral); }
+  .account-tile:focus-visible{ outline:2px solid var(--coral); outline-offset:2px; }
+  .account-note{ color:var(--muted); font-size:0.8rem; margin:0 0 16px; min-height:1.2em; }
+
+  .admin-toggle-row{ text-align:center; margin-top:4px; }
+  .admin-toggle{
+    background:none; border:none; color:var(--muted); font-family:'Nunito',sans-serif; font-weight:700;
+    font-size:0.82rem; text-decoration:underline; cursor:pointer;
+  }
+  .admin-panel{ margin-top:18px; padding-top:18px; border-top:1px solid var(--border); }
+  .admin-list{ list-style:none; margin:0 0 14px; padding:0; display:flex; flex-direction:column; gap:6px; }
+  .admin-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    background:var(--tile-bg); border-radius:8px; padding:8px 12px; font-weight:700; font-size:0.9rem;
+  }
+  .admin-self-row{ margin-bottom:14px; }
+  .admin-row-name{ display:flex; align-items:center; gap:10px; }
+  .admin-passcode-input{
+    width:4.5ch; font-size:0.82rem; font-weight:700; color:var(--card-ink); background:var(--card);
+    border:1.5px solid var(--border); border-radius:6px; padding:3px 6px; letter-spacing:0.1em; text-align:center;
+  }
+  .admin-passcode-input:focus-visible{ outline:none; border-color:var(--coral); }
+  .admin-row-actions{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .admin-history-btn{
+    background:none; border:none; color:var(--coral); font-family:'Nunito',sans-serif; font-weight:700;
+    font-size:0.78rem; text-decoration:underline; cursor:pointer; padding:0;
+  }
+  .admin-row-actions .row-remove{ background:none; border:none; color:var(--muted); font-size:1.1rem; cursor:pointer; padding:2px 6px; line-height:1; }
+  .admin-row-actions .row-remove:hover{ color:var(--bad); }
+  .admin-empty{ color:var(--muted); font-size:0.85rem; font-style:italic; list-style:none; }
+  .admin-add-form{ display:flex; gap:8px; margin-bottom:6px; }
+  .admin-add-form input{
+    flex:1; font:inherit; font-size:0.9rem; padding:9px 12px; border:1.5px solid var(--border); border-radius:10px;
+    background:var(--card); color:var(--card-ink);
+  }
+  .admin-add-form button{
+    font-family:'Nunito',sans-serif; font-weight:700; font-size:0.88rem; background:var(--coral); color:var(--coral-ink);
+    border:none; border-radius:10px; padding:9px 16px; cursor:pointer;
+  }
+  .admin-done{
+    display:block; width:100%; margin-top:14px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.9rem;
+    background:var(--tile-bg); color:var(--card-ink); border:none; border-radius:10px; padding:11px 0; cursor:pointer;
+  }
+
+  /* ---------- History ---------- */
+  .history-table-wrap{ overflow-x:auto; margin-bottom:18px; }
+  .history-table{ width:100%; border-collapse:collapse; min-width:320px; }
+  .history-table th{
+    text-align:left; font-family:'Nunito',sans-serif; font-size:0.64rem; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--muted); padding:8px 10px; border-bottom:1px solid var(--border);
+  }
+  .history-table td{ padding:10px; border-bottom:1px solid var(--border); font-weight:700; font-size:0.9rem; }
+  .history-table td.mono{ font-family:'Nunito',sans-serif; }
+  .history-table .history-note{ color:var(--muted); font-weight:600; font-size:0.72rem; display:block; }
+
+  .chart-block{ margin-bottom:22px; }
+  .chart-head{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:4px; flex-wrap:wrap; }
+  .chart-caption{ color:var(--muted); font-size:0.72rem; }
+  .chart-readout{
+    font-family:'Nunito',sans-serif; font-weight:700; font-size:0.86rem; color:var(--card-ink);
+    margin:0 0 6px; min-height:1.3em;
+  }
+  .chart-svg{ width:100%; height:auto; display:block; }
+  .chart-grid{ stroke:var(--border); stroke-width:1; }
+  .chart-axis-text{ fill:var(--muted); font-family:'Nunito',sans-serif; font-size:9px; }
+  .chart-value-label{ fill:var(--card-ink); font-family:'Nunito',sans-serif; font-weight:700; font-size:10px; }
+  .chart-bar-ghost{ fill:var(--border); }
+  .chart-bar-correct{ fill:var(--chart-accuracy); }
+  .chart-mark-hover{ opacity:0.72; }
+  .chart-hit{ fill:transparent; cursor:pointer; }
+  .chart-hit:focus-visible{ outline:2px solid var(--chart-accuracy); outline-offset:-2px; }
+  .chart-line{ fill:none; stroke:var(--chart-speed); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .chart-area{ fill:var(--chart-speed); opacity:0.1; }
+  .chart-dot{ fill:var(--chart-speed); stroke:var(--card); stroke-width:2; cursor:pointer; }
+
+  .single-stats{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px; }
+  .chart-empty-note{ color:var(--muted); font-size:0.82rem; margin:0 0 18px; }
+
+  /* ---------- Setup ---------- */
+  .hero-title{ font-size:clamp(1.9rem,7vw,2.5rem); font-weight:700; margin:0 0 6px; text-wrap:balance; }
+  .hero-sub{ color:var(--muted); margin:0 0 22px; line-height:1.5; max-width:40ch; }
+
+  .type-toggle{ display:flex; gap:8px; margin-bottom:20px; }
+  .type-toggle button{
+    flex:1; font-family:'Nunito',sans-serif; font-weight:800; font-size:0.95rem;
+    background:var(--tile-bg); border:2px solid var(--border); color:var(--card-ink);
+    border-radius:14px; padding:12px 8px; cursor:pointer; text-align:center;
+  }
+  .type-toggle button.active{ background:var(--coral); color:var(--coral-ink); border-color:var(--coral-dark); }
+  .type-toggle button[data-type="divide"].active{ background:var(--blue); border-color:var(--blue-dark); }
+  .type-toggle button:focus-visible{ outline:2px solid var(--coral); outline-offset:2px; }
+
+  .field-label{ font-weight:800; font-size:0.82rem; letter-spacing:0.03em; text-transform:uppercase; color:var(--muted); }
+
+  .btn-start{
+    display:flex; align-items:center; justify-content:center; gap:9px;
+    width:100%; font-family:'Nunito',sans-serif; font-weight:900; font-size:1.05rem;
+    letter-spacing:0.03em; text-transform:uppercase;
+    background:var(--coral); color:var(--coral-ink); border:none; border-radius:16px; padding:16px 0;
+    cursor:pointer; box-shadow:0 4px 0 var(--coral-dark);
+    transition:transform 0.05s ease, box-shadow 0.05s ease;
+  }
+  .btn-start:active{ transform:translateY(4px); box-shadow:0 0 0 var(--coral-dark); }
+  .btn-start:focus-visible{ outline:2px solid var(--card-ink); outline-offset:3px; }
+  @media (prefers-reduced-motion: reduce){ .btn-start{ transition:none; } }
+  .btn-rocket{ width:20px; height:20px; flex-shrink:0; transform:rotate(45deg); }
+
+  .title-row{ display:flex; align-items:center; gap:10px; margin-bottom:2px; }
+  .mascot-rocket{ width:34px; height:34px; flex-shrink:0; color:var(--coral); transform:rotate(45deg); }
+
+  .history-strip{ margin-top:16px; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:0.85rem; line-height:1.6; }
+  .history-strip strong{ color:var(--card-ink); }
+
+  /* ---------- Quiz ---------- */
+  .quiz-stats{ display:flex; justify-content:space-between; margin-bottom:10px; }
+  .stat{ display:flex; flex-direction:column; gap:2px; }
+  .stat-label{ font-size:0.66rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); font-weight:700; }
+  .stat-value{ font-size:1.05rem; font-weight:700; }
+  .streak-flame{ display:inline-flex; align-items:center; gap:4px; color:var(--coral); }
+  .streak-flame svg{ width:15px; height:15px; }
+
+  .progress-track{ height:6px; border-radius:99px; background:var(--tile-bg); overflow:hidden; margin-bottom:22px; }
+  .progress-fill{ height:100%; background:var(--coral); border-radius:99px; transition:width 0.25s ease; }
+
+  .equation-card{
+    position:relative;
+    background:var(--tile-bg); border-radius:16px; border:2px solid transparent;
+    padding:30px 18px 22px; text-align:center; transition:border-color 0.15s, background-color 0.15s;
+  }
+  .equation-card.flash-good{ border-color:var(--good); background:var(--good-soft); }
+  .equation-card.flash-bad{ border-color:var(--bad); background:var(--bad-soft); }
+  .time-critical-flash{
+    position:absolute; inset:0; border-radius:inherit; background:var(--bad);
+    opacity:0; pointer-events:none; z-index:4;
+  }
+  .time-critical-flash.active{ animation:timeBlink 0.5s ease-in-out infinite; }
+  @keyframes timeBlink{ 0%,100%{ opacity:0; } 50%{ opacity:0.4; } }
+  @media (prefers-reduced-motion: reduce){
+    .time-critical-flash.active{ animation:none; opacity:0.22; }
+  }
+
+  .halfway-fx{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    pointer-events:none; opacity:0; transition:opacity 0.25s ease; z-index:5;
+  }
+  .halfway-fx.show{ opacity:1; }
+  .halfway-star{
+    position:absolute; font-size:20px; line-height:1; color:var(--amber);
+    opacity:0; transform:scale(0) rotate(0deg);
+  }
+  .halfway-fx.show .halfway-star{ animation:halfwayStarPop 1.1s ease forwards; }
+  .halfway-star:nth-child(1){ top:8%;  left:12%; font-size:16px; animation-delay:0s; }
+  .halfway-star:nth-child(2){ top:15%; left:78%; font-size:22px; animation-delay:0.08s; }
+  .halfway-star:nth-child(3){ top:70%; left:8%;  font-size:18px; animation-delay:0.14s; }
+  .halfway-star:nth-child(4){ top:74%; left:82%; font-size:20px; animation-delay:0.05s; }
+  .halfway-star:nth-child(5){ top:4%;  left:48%; font-size:15px; animation-delay:0.2s; }
+  .halfway-star:nth-child(6){ top:82%; left:46%; font-size:17px; animation-delay:0.12s; }
+  .halfway-text{
+    position:relative; z-index:1; font-family:'Nunito',sans-serif; font-weight:900;
+    font-size:clamp(1.15rem,5vw,1.5rem); color:var(--coral); background:var(--card);
+    padding:10px 20px; border-radius:14px; box-shadow:var(--shadow);
+    opacity:0; transform:scale(0.7);
+  }
+  .halfway-fx.show .halfway-text{ animation:halfwayTextPop 1.1s ease forwards; }
+  .halfway-rocket{
+    position:absolute; width:22px; height:22px; color:var(--coral);
+    left:50%; bottom:10%; opacity:0; transform:translate(-50%,0) rotate(45deg);
+  }
+  .halfway-fx.show .halfway-rocket{ animation:halfwayRocketFly 1.1s ease forwards; }
+  @keyframes halfwayStarPop{
+    0%{ opacity:0; transform:scale(0) rotate(0deg); }
+    30%{ opacity:1; transform:scale(1.3) rotate(15deg); }
+    60%{ opacity:1; transform:scale(1) rotate(-10deg); }
+    100%{ opacity:0; transform:scale(0.8) rotate(0deg); }
+  }
+  @keyframes halfwayTextPop{
+    0%{ opacity:0; transform:scale(0.7); }
+    20%{ opacity:1; transform:scale(1.08); }
+    30%{ opacity:1; transform:scale(1); }
+    85%{ opacity:1; transform:scale(1); }
+    100%{ opacity:0; transform:scale(0.94); }
+  }
+  @keyframes halfwayRocketFly{
+    0%{ opacity:0; bottom:10%; transform:translate(-50%,0) rotate(45deg); }
+    20%{ opacity:1; }
+    90%{ opacity:1; }
+    100%{ opacity:0; bottom:95%; transform:translate(-50%,0) rotate(45deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .halfway-star, .halfway-text{ animation:none !important; opacity:1 !important; transform:none !important; }
+    .halfway-rocket{ display:none; }
+  }
+  .equation{ font-family:'Nunito',sans-serif; font-weight:800; font-size:clamp(2.1rem,9vw,3rem); margin-bottom:16px; }
+  #answerForm, #passcodeForm{ display:flex; align-items:center; justify-content:center; gap:10px; }
+  #passcodeForm{ margin:24px 0 6px; }
+  .answer-input{
+    font-family:'Nunito',sans-serif; font-weight:800; font-size:clamp(1.6rem,7vw,2.1rem); text-align:center;
+    width:3.4ch; background:var(--card); color:var(--card-ink); border:2px solid var(--border);
+    border-radius:10px; padding:6px 4px;
+  }
+  .answer-input:focus-visible{ outline:none; border-color:var(--coral); }
+  .passcode-input{ width:5ch; letter-spacing:0.2em; }
+  .passcode-msg{ color:var(--bad); font-weight:700; font-size:0.85rem; min-height:1.2em; margin:0 0 16px; text-align:center; }
+  @keyframes shakeX{
+    10%,90%{ transform:translateX(-1px); } 20%,80%{ transform:translateX(2px); }
+    30%,50%,70%{ transform:translateX(-4px); } 40%,60%{ transform:translateX(4px); }
+  }
+  .shake{ animation:shakeX 0.4s; }
+  @media (prefers-reduced-motion: reduce){
+    .shake{ animation:none; }
+  }
+  .btn-submit{
+    width:48px; height:48px; border-radius:13px; border:none; background:var(--coral); color:var(--coral-ink);
+    font-size:1.3rem; font-weight:900; line-height:1; cursor:pointer; flex-shrink:0;
+    box-shadow:0 4px 0 var(--coral-dark);
+    transition:transform 0.05s ease, box-shadow 0.05s ease;
+  }
+  .btn-submit:active{ transform:translateY(4px); box-shadow:0 0 0 var(--coral-dark); }
+  .btn-submit:focus-visible{ outline:2px solid var(--card-ink); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ .btn-submit{ transition:none; } }
+  .equation-feedback{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    margin:14px 0 0; font-weight:800; font-family:'Nunito',sans-serif; font-size:0.95rem;
+    border-radius:12px; padding:0; max-height:0; opacity:0; overflow:hidden;
+    transition:max-height 0.2s ease, opacity 0.2s ease, padding 0.2s ease;
+  }
+  .equation-feedback.fb-show{ max-height:60px; opacity:1; padding:12px 10px; }
+  .equation-feedback.fb-good{ background:var(--good-soft); color:var(--good); }
+  .equation-feedback.fb-bad{ background:var(--bad-soft); color:var(--bad); }
+  @media (prefers-reduced-motion: reduce){ .equation-feedback{ transition:none; } }
+
+  .btn-end-early{
+    display:block; margin:18px auto 0; background:none; border:none; color:var(--muted);
+    font-family:'Nunito',sans-serif; font-weight:700; font-size:0.82rem; text-decoration:underline; cursor:pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .equation-card{ transition:none; }
+    .progress-fill{ transition:none; }
+  }
+
+  /* ---------- Results ---------- */
+  .results-eyebrow{ font-weight:800; font-size:0.8rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin:0 0 6px; }
+  .results-time{ font-family:'Nunito',sans-serif; font-weight:900; font-size:clamp(2.6rem,12vw,3.6rem); color:var(--coral); line-height:1; margin-bottom:18px; }
+
+  .results-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:22px; }
+  .result-tile{ background:var(--tile-bg); border-radius:12px; padding:12px 8px; text-align:center; }
+  .tile-label{ display:block; font-size:0.64rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:4px; }
+  .tile-value{ font-family:'Nunito',sans-serif; font-weight:700; font-size:1.15rem; }
+
+  .weak-title{ font-size:0.95rem; font-weight:800; margin:0 0 10px; }
+  .weak-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+  .weak-chip{
+    font-family:'Nunito',sans-serif; font-weight:600; font-size:0.85rem; background:var(--bad-soft); color:var(--bad);
+    border-radius:8px; padding:6px 10px;
+  }
+  .all-clear-msg{ background:var(--good-soft); color:var(--good); font-weight:700; border-radius:12px; padding:14px; text-align:center; margin:0 0 8px; }
+
+  .results-actions{ display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+  .btn-ghost{
+    font-family:'Nunito',sans-serif; font-weight:800; font-size:0.95rem; background:var(--card); color:var(--coral);
+    border:2px solid var(--border); border-radius:14px; padding:12px 0; cursor:pointer;
+  }
+</style>
+
+<div class="space-scene" aria-hidden="true">
+  <span class="star tw" style="top:6%; left:20%; width:3px; height:3px;"></span>
+  <span class="star" style="top:12%; left:42%; width:2px; height:2px;"></span>
+  <span class="star tw" style="top:9%; left:68%; width:4px; height:4px; animation-delay:0.4s;"></span>
+  <span class="star" style="top:18%; left:88%; width:2px; height:2px;"></span>
+  <span class="star tw" style="top:24%; left:8%; width:3px; height:3px; animation-delay:0.8s;"></span>
+  <span class="star" style="top:32%; left:55%; width:2px; height:2px;"></span>
+  <span class="star tw" style="top:40%; left:30%; width:3px; height:3px; animation-delay:1.2s;"></span>
+  <span class="star" style="top:46%; left:78%; width:2px; height:2px;"></span>
+  <span class="star tw" style="top:55%; left:15%; width:4px; height:4px; animation-delay:0.2s;"></span>
+  <span class="star" style="top:62%; left:92%; width:2px; height:2px;"></span>
+  <span class="star tw" style="top:70%; left:48%; width:3px; height:3px; animation-delay:1.6s;"></span>
+  <span class="star" style="top:78%; left:25%; width:2px; height:2px;"></span>
+  <span class="star tw" style="top:85%; left:65%; width:3px; height:3px; animation-delay:0.6s;"></span>
+  <span class="star" style="top:92%; left:10%; width:2px; height:2px;"></span>
+  <span class="planet planet-a planet-bob"></span>
+  <span class="planet planet-b planet-bob"></span>
+  <span class="planet-c"></span>
+</div>
+
+<div class="stage">
+  <div class="console" id="console">
+    <div class="topline">
+      <span class="brand">TIMES SPRINT</span>
+      <span class="account-badge" id="accountBadge" hidden></span>
+    </div>
+
+    <section class="screen" id="screenAccount">
+      <h1 class="hero-title">Who's practicing?</h1>
+      <p class="hero-sub">Pick your name to start your sprint.</p>
+      <div class="account-list" id="accountGrid"></div>
+      <p class="account-note" id="accountMsg"></p>
+      <div class="admin-toggle-row"><button type="button" class="admin-toggle" id="btnAdminOpen">Admin</button></div>
+      <div class="admin-panel" id="adminPanel" hidden>
+        <div class="admin-row admin-self-row">
+          <span>Admin passcode</span>
+          <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="adminPasscodeInput" class="admin-passcode-input mono" aria-label="Admin passcode">
+        </div>
+        <h2 class="weak-title">Manage accounts</h2>
+        <ul class="admin-list" id="adminAccountList"></ul>
+        <form class="admin-add-form" id="adminAddForm">
+          <input type="text" id="adminAddName" placeholder="Student name" aria-label="New student name">
+          <button type="submit">Add</button>
+        </form>
+        <button type="button" class="admin-done" id="btnAdminDone">Done</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screenPasscode" hidden>
+      <p class="results-eyebrow">Passcode</p>
+      <h1 class="hero-title" id="passcodeName">Enter passcode</h1>
+      <p class="hero-sub" id="passcodeSub">Ask your teacher if you don't know your passcode.</p>
+      <form id="passcodeForm" autocomplete="off">
+        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="passcodeInput" class="answer-input passcode-input" aria-label="Passcode">
+        <button type="submit" class="btn-submit" aria-label="Submit passcode">→</button>
+      </form>
+      <p class="passcode-msg" id="passcodeMsg"></p>
+      <button type="button" class="btn-ghost" id="btnPasscodeBack">Back</button>
+    </section>
+
+    <section class="screen" id="screenSetup" hidden>
+      <p class="results-eyebrow" id="setupGreeting"></p>
+      <div class="title-row">
+        <h1 class="hero-title">Times Sprint</h1>
+        <svg class="mascot-rocket" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L15 8 L9 8 Z" fill="currentColor"/><rect x="9" y="7" width="6" height="10" rx="3" fill="currentColor"/><circle cx="12" cy="11" r="1.4" fill="#fff"/><path d="M9 15 L5.5 19.5 L9 18.5 Z" fill="currentColor"/><path d="M15 15 L18.5 19.5 L15 18.5 Z" fill="currentColor"/><path d="M10 18.3 L12 23 L14 18.3 Z" fill="var(--amber)"/></svg>
+      </div>
+      <p class="hero-sub" id="setupSub">50 questions, from 2× to 12×. Race the clock — miss one and it comes right back around until you land it.</p>
+
+      <div class="type-toggle" id="typeToggle">
+        <button type="button" data-type="multiply">× Multiply</button>
+        <button type="button" data-type="divide">÷ Divide</button>
+      </div>
+
+      <button type="button" class="btn-start" id="btnStart">
+        <svg class="btn-rocket" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L15 8 L9 8 Z" fill="currentColor"/><rect x="9" y="7" width="6" height="10" rx="3" fill="currentColor"/><circle cx="12" cy="11" r="1.4" fill="var(--coral)"/><path d="M9 15 L5.5 19.5 L9 18.5 Z" fill="currentColor"/><path d="M15 15 L18.5 19.5 L15 18.5 Z" fill="currentColor"/><path d="M10 18.3 L12 23 L14 18.3 Z" fill="var(--amber)"/></svg>
+        Launch Sprint
+      </button>
+      <div class="history-strip" id="historyStrip"></div>
+      <div class="admin-toggle-row"><button type="button" class="admin-toggle" id="btnViewHistory">View history</button></div>
+    </section>
+
+    <section class="screen" id="screenQuiz" hidden>
+      <div class="quiz-stats">
+        <div class="stat"><span class="stat-label">Time</span><span class="stat-value mono" id="questionTimer">15</span></div>
+        <div class="stat"><span class="stat-label">Streak</span><span class="stat-value mono streak-flame" id="quizStreak"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L15 8 L9 8 Z" fill="currentColor"/><rect x="9" y="7" width="6" height="10" rx="3" fill="currentColor"/><circle cx="12" cy="11" r="1.4" fill="#fff"/><path d="M9 15 L5.5 19.5 L9 18.5 Z" fill="currentColor"/><path d="M15 15 L18.5 19.5 L15 18.5 Z" fill="currentColor"/><path d="M10 18.3 L12 23 L14 18.3 Z" fill="var(--amber)"/></svg><span id="streakNum">0</span></span></div>
+        <div class="stat"><span class="stat-label">Fact</span><span class="stat-value mono" id="quizProgress">1 / 20</span></div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+      <div class="equation-card" id="equationCard">
+        <div class="time-critical-flash" id="timeCriticalFlash" aria-hidden="true"></div>
+        <div class="halfway-fx" id="halfwayFx" hidden aria-hidden="true">
+          <span class="halfway-star">★</span><span class="halfway-star">★</span><span class="halfway-star">★</span>
+          <span class="halfway-star">★</span><span class="halfway-star">★</span><span class="halfway-star">★</span>
+          <svg class="halfway-rocket" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L15 8 L9 8 Z" fill="currentColor"/><rect x="9" y="7" width="6" height="10" rx="3" fill="currentColor"/><circle cx="12" cy="11" r="1.4" fill="#fff"/><path d="M9 15 L5.5 19.5 L9 18.5 Z" fill="currentColor"/><path d="M15 15 L18.5 19.5 L15 18.5 Z" fill="currentColor"/><path d="M10 18.3 L12 23 L14 18.3 Z" fill="var(--amber)"/></svg>
+          <span class="halfway-text">Halfway there!</span>
+        </div>
+        <div class="equation" id="equationText">7 × 8</div>
+        <form id="answerForm" autocomplete="off">
+          <input type="text" inputmode="numeric" pattern="[0-9]*" id="answerInput" class="answer-input" aria-label="Your answer">
+          <button type="submit" class="btn-submit" aria-label="Submit answer">→</button>
+        </form>
+        <p class="equation-feedback" id="equationFeedback"></p>
+      </div>
+
+      <button type="button" class="btn-end-early" id="btnEndEarly">End sprint early</button>
+    </section>
+
+    <section class="screen" id="screenResults" hidden>
+      <p class="results-eyebrow" id="resultsEyebrow">Sprint complete</p>
+      <div class="results-time mono" id="resultsTime">0:00.0</div>
+
+      <div class="results-grid">
+        <div class="result-tile"><span class="tile-label">Accuracy</span><span class="tile-value" id="resAccuracy">—</span></div>
+        <div class="result-tile"><span class="tile-label">Avg / fact</span><span class="tile-value" id="resAvg">—</span></div>
+        <div class="result-tile"><span class="tile-label">Best streak</span><span class="tile-value" id="resStreak">—</span></div>
+      </div>
+
+      <div id="weakSection">
+        <h2 class="weak-title">Keep practicing</h2>
+        <div class="weak-chips" id="weakChips"></div>
+      </div>
+      <p class="all-clear-msg" id="allClearMsg" hidden>Every fact landed clean. Nice work!</p>
+
+      <div class="results-actions">
+        <button type="button" class="btn-ghost" id="btnPracticeWeak" hidden>Practice these facts</button>
+        <button type="button" class="btn-start" id="btnNewSprint">New sprint</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screenHistory" hidden>
+      <p class="results-eyebrow">History</p>
+      <h1 class="hero-title" id="historyName">Student</h1>
+      <div class="type-toggle" id="historyTabs">
+        <button type="button" data-type="multiply">× Multiplication</button>
+        <button type="button" data-type="divide">÷ Division</button>
+      </div>
+      <div id="historyCharts"></div>
+      <div class="history-table-wrap">
+        <table class="history-table" id="historyTable">
+          <thead><tr><th>Date</th><th>Accuracy</th><th>Speed</th></tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+      <p class="account-note" id="historyEmpty" hidden>No sprints played yet.</p>
+      <button type="button" class="btn-ghost" id="btnHistoryBack">Back</button>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var ACCOUNTS_KEY = "timesSprint.accounts.v1";
+  var FIXED_TABLES = [2,3,4,5,6,7,8,9,10,11,12];
+  var FIXED_MULT_MIN = 2, FIXED_MULT_MAX = 12;
+  var FIXED_QUESTION_COUNT = 50;
+  var PRAISE_WORDS = ["Nice!","Great!","Perfect!","Awesome!","Nailed it!","Sweet!"];
+  var QUESTION_TIME_LIMIT = 15;
+  var TIME_CRITICAL_AT = 5;
+
+  function uid(){ return Math.random().toString(36).slice(2,10); }
+  function genPasscode(){ return String(Math.floor(Math.random()*10000)).padStart(4,"0"); }
+
+  function historyKeyFor(id){ return "timesSprint.history.v1."+id; }
+
+  function loadHistoryFor(id){
+    try{ var raw = localStorage.getItem(historyKeyFor(id)); if(raw){ var p = JSON.parse(raw); if(Array.isArray(p)) return p; } }catch(e){}
+    return [];
+  }
+  function saveHistory(entry){
+    if(!currentAccount) return;
+    try{
+      var h = loadHistoryFor(currentAccount.id);
+      h.unshift(entry);
+      if(h.length>20) h = h.slice(0,20);
+      localStorage.setItem(historyKeyFor(currentAccount.id), JSON.stringify(h));
+    }catch(e){}
+  }
+
+  var accountsAreSample = false;
+  function loadAccounts(){
+    try{
+      var raw = localStorage.getItem(ACCOUNTS_KEY);
+      if(raw){
+        var p = JSON.parse(raw);
+        if(Array.isArray(p)){
+          var backfilled = false;
+          p.forEach(function(a){ if(!a.passcode){ a.passcode = genPasscode(); backfilled = true; } });
+          if(backfilled){ try{ localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(p)); }catch(e){} }
+          return p;
+        }
+      }
+    }catch(e){}
+    accountsAreSample = true;
+    return [
+      {id:uid(), name:"Ava", passcode:genPasscode()},
+      {id:uid(), name:"Liam", passcode:genPasscode()},
+      {id:uid(), name:"Maya", passcode:genPasscode()}
+    ];
+  }
+  function saveAccounts(){
+    accountsAreSample = false;
+    try{ localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts)); }catch(e){}
+  }
+
+  var ADMIN_PASSCODE_KEY = "timesSprint.adminPasscode.v1";
+  function loadAdminPasscode(){
+    try{
+      var raw = localStorage.getItem(ADMIN_PASSCODE_KEY);
+      if(raw && /^[0-9]{4}$/.test(raw)) return raw;
+    }catch(e){}
+    return "0000";
+  }
+  function saveAdminPasscode(){
+    try{ localStorage.setItem(ADMIN_PASSCODE_KEY, adminPasscode); }catch(e){}
+  }
+
+  var accounts = loadAccounts();
+  var adminPasscode = loadAdminPasscode();
+  var currentAccount = null;
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t = a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+  function formatTime(ms){
+    var totalTenths = Math.round(ms/100);
+    var m = Math.floor(totalTenths/600);
+    var s = Math.floor((totalTenths%600)/10);
+    var t = totalTenths%10;
+    return m+":"+(s<10?"0":"")+s+"."+t;
+  }
+
+  // ---------- Account select & admin ----------
+  var adminOpen = false;
+
+  function renderAccountScreen(){
+    var grid = document.getElementById("accountGrid");
+    var msg = document.getElementById("accountMsg");
+    grid.innerHTML = "";
+    if(accounts.length===0){
+      msg.textContent = "No accounts yet — use Admin below to add your class.";
+    } else {
+      msg.textContent = accountsAreSample ? "Sample students shown — use Admin below to set up your real class." : "";
+      accounts.forEach(function(acc){
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "account-tile"; b.textContent = acc.name;
+        b.addEventListener("click", function(){ openPasscode(acc); });
+        grid.appendChild(b);
+      });
+    }
+    renderAdminPanel();
+  }
+
+  function renderAdminPanel(){
+    document.getElementById("adminPanel").hidden = !adminOpen;
+    document.getElementById("btnAdminOpen").textContent = adminOpen ? "Close admin" : "Admin";
+    if(!adminOpen) return;
+    document.getElementById("adminPasscodeInput").value = adminPasscode;
+    var list = document.getElementById("adminAccountList");
+    list.innerHTML = "";
+    if(accounts.length===0){
+      var li = document.createElement("li");
+      li.className = "admin-empty"; li.textContent = "No accounts yet.";
+      list.appendChild(li);
+    }
+    accounts.forEach(function(acc){
+      var li = document.createElement("li"); li.className = "admin-row";
+      var nameWrap = document.createElement("div"); nameWrap.className = "admin-row-name";
+      var span = document.createElement("span"); span.textContent = acc.name;
+      var codeInput = document.createElement("input");
+      codeInput.type = "text"; codeInput.inputMode = "numeric"; codeInput.pattern = "[0-9]*";
+      codeInput.maxLength = 4; codeInput.className = "admin-passcode-input mono";
+      codeInput.value = acc.passcode;
+      codeInput.setAttribute("aria-label", "Passcode for "+acc.name);
+      codeInput.addEventListener("input", function(){
+        codeInput.value = codeInput.value.replace(/\D/g,"").slice(0,4);
+      });
+      codeInput.addEventListener("keydown", function(e){
+        if(e.key==="Enter"){ e.preventDefault(); codeInput.blur(); }
+      });
+      codeInput.addEventListener("blur", function(){
+        var digits = codeInput.value.replace(/\D/g,"").slice(0,4);
+        if(digits.length===0){ codeInput.value = acc.passcode; return; }
+        digits = digits.padStart(4,"0");
+        acc.passcode = digits;
+        codeInput.value = digits;
+        saveAccounts();
+      });
+      nameWrap.appendChild(span); nameWrap.appendChild(codeInput);
+
+      var actions = document.createElement("div"); actions.className = "admin-row-actions";
+      var newCode = document.createElement("button");
+      newCode.type = "button"; newCode.className = "admin-history-btn"; newCode.textContent = "New code";
+      newCode.addEventListener("click", function(){
+        acc.passcode = genPasscode();
+        saveAccounts(); renderAdminPanel();
+      });
+      var hist = document.createElement("button");
+      hist.type = "button"; hist.className = "admin-history-btn"; hist.textContent = "History";
+      hist.addEventListener("click", function(){ renderHistoryScreen(acc, "account"); });
+      var rm = document.createElement("button");
+      rm.type = "button"; rm.className = "row-remove"; rm.textContent = "×"; rm.setAttribute("aria-label","Remove "+acc.name);
+      rm.addEventListener("click", function(){
+        accounts = accounts.filter(function(a){ return a.id!==acc.id; });
+        saveAccounts(); renderAccountScreen();
+      });
+      actions.appendChild(newCode); actions.appendChild(hist); actions.appendChild(rm);
+      li.appendChild(nameWrap); li.appendChild(actions);
+      list.appendChild(li);
+    });
+  }
+
+  var historyReturnTo = "setup";
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function formatDate(ts){
+    return new Date(ts).toLocaleDateString(undefined, { month:"short", day:"numeric", year:"numeric" });
+  }
+  function formatShortDate(ts){
+    return new Date(ts).toLocaleDateString(undefined, { month:"short", day:"numeric" });
+  }
+  function niceMax(v){
+    if(v<=5) return 5;
+    if(v<=10) return 10;
+    if(v<=20) return 20;
+    if(v<=30) return 30;
+    if(v<=60) return 60;
+    if(v<=120) return 120;
+    var step = Math.pow(10, Math.floor(Math.log10(v)));
+    return Math.ceil(v/step)*step;
+  }
+  function svgEl(tag, attrs){
+    var el = document.createElementNS(SVGNS, tag);
+    Object.keys(attrs).forEach(function(k){ el.setAttribute(k, attrs[k]); });
+    return el;
+  }
+
+  function buildAccuracyChart(points, readout){
+    var W=400, H=190, padL=30, padR=8, padT=14, padB=30;
+    var plotW=W-padL-padR, plotH=H-padT-padB;
+    var maxTotal = niceMax(Math.max.apply(null, points.map(function(p){ return p.total; })));
+    var n = points.length;
+    var slot = plotW/n;
+    var barW = Math.min(24, slot*0.55);
+
+    var svg = svgEl("svg", { viewBox:"0 0 "+W+" "+H, "class":"chart-svg", role:"img", "aria-label":"Correct answers per sprint" });
+
+    [0,0.5,1].forEach(function(f){
+      var y = padT + plotH*(1-f);
+      svg.appendChild(svgEl("line", { x1:padL, x2:W-padR, y1:y, y2:y, "class":"chart-grid" }));
+      var t = svgEl("text", { x:padL-6, y:y+3, "text-anchor":"end", "class":"chart-axis-text" });
+      t.textContent = Math.round(maxTotal*f);
+      svg.appendChild(t);
+    });
+
+    function setReadout(p){
+      readout.textContent = formatDate(p.ts)+" — "+p.correct+"/"+p.total+" correct ("+p.accuracy+"%)";
+    }
+
+    points.forEach(function(p, i){
+      var cx = padL + slot*i + slot/2;
+      var x = cx - barW/2;
+      var totalH = plotH*(p.total/maxTotal);
+      svg.appendChild(svgEl("rect", { x:x, y:padT+plotH-totalH, width:barW, height:totalH, rx:4, "class":"chart-bar-ghost" }));
+
+      var correctH = plotH*(p.correct/maxTotal);
+      var bar = svgEl("rect", { x:x, y:padT+plotH-correctH, width:barW, height:Math.max(correctH,0.5), rx:4, "class":"chart-bar-correct" });
+      svg.appendChild(bar);
+
+      if(i===n-1){
+        var vt = svgEl("text", { x:cx, y:padT+plotH-correctH-6, "text-anchor":"middle", "class":"chart-value-label" });
+        vt.textContent = p.correct+"/"+p.total;
+        svg.appendChild(vt);
+      }
+      if(i===0 || i===n-1){
+        var xt = svgEl("text", { x:cx, y:H-8, "text-anchor":"middle", "class":"chart-axis-text" });
+        xt.textContent = p.shortDate;
+        svg.appendChild(xt);
+      }
+
+      var hit = svgEl("rect", { x:padL+slot*i, y:padT, width:slot, height:plotH, "class":"chart-hit", tabindex:"0" });
+      hit.setAttribute("aria-label", formatDate(p.ts)+": "+p.correct+" of "+p.total+" correct");
+      hit.addEventListener("pointerenter", function(){ bar.classList.add("chart-mark-hover"); setReadout(p); });
+      hit.addEventListener("pointerleave", function(){ bar.classList.remove("chart-mark-hover"); setReadout(points[n-1]); });
+      hit.addEventListener("focus", function(){ bar.classList.add("chart-mark-hover"); setReadout(p); });
+      hit.addEventListener("blur", function(){ bar.classList.remove("chart-mark-hover"); setReadout(points[n-1]); });
+      svg.appendChild(hit);
+    });
+
+    setReadout(points[n-1]);
+    return svg;
+  }
+
+  function buildSpeedChart(points, readout){
+    var W=400, H=190, padL=34, padR=8, padT=14, padB=30;
+    var plotW=W-padL-padR, plotH=H-padT-padB;
+    var maxTime = niceMax(Math.ceil(Math.max.apply(null, points.map(function(p){ return p.timeMs/1000; }))));
+    var n = points.length;
+    var slot = plotW/(n>1?n-1:1);
+
+    var svg = svgEl("svg", { viewBox:"0 0 "+W+" "+H, "class":"chart-svg", role:"img", "aria-label":"Total time per sprint" });
+
+    [0,0.5,1].forEach(function(f){
+      var y = padT + plotH*(1-f);
+      svg.appendChild(svgEl("line", { x1:padL, x2:W-padR, y1:y, y2:y, "class":"chart-grid" }));
+      var t = svgEl("text", { x:padL-6, y:y+3, "text-anchor":"end", "class":"chart-axis-text" });
+      t.textContent = Math.round(maxTime*f)+"s";
+      svg.appendChild(t);
+    });
+
+    function setReadout(p){
+      readout.textContent = formatDate(p.ts)+" — "+formatTime(p.timeMs);
+    }
+
+    var coords = points.map(function(p, i){
+      var cx = n>1 ? padL + slot*i : padL + plotW/2;
+      var cy = padT + plotH*(1 - (p.timeMs/1000)/maxTime);
+      return { cx:cx, cy:cy, p:p };
+    });
+
+    if(coords.length>1){
+      var d = coords.map(function(c,i){ return (i===0?"M":"L")+c.cx.toFixed(1)+","+c.cy.toFixed(1); }).join(" ");
+      var areaD = d+" L"+coords[coords.length-1].cx.toFixed(1)+","+(padT+plotH)+" L"+coords[0].cx.toFixed(1)+","+(padT+plotH)+" Z";
+      svg.appendChild(svgEl("path", { d:areaD, "class":"chart-area" }));
+      svg.appendChild(svgEl("path", { d:d, "class":"chart-line" }));
+    }
+
+    coords.forEach(function(c, i){
+      var dot = svgEl("circle", { cx:c.cx, cy:c.cy, r:5, "class":"chart-dot" });
+      svg.appendChild(dot);
+
+      if(i===n-1){
+        var vt = svgEl("text", { x:c.cx, y:c.cy-11, "text-anchor":"end", "class":"chart-value-label" });
+        vt.textContent = formatTime(c.p.timeMs);
+        svg.appendChild(vt);
+      }
+      if(i===0 || i===n-1){
+        var xt = svgEl("text", { x:c.cx, y:H-8, "text-anchor": i===0?"start":"end", "class":"chart-axis-text" });
+        xt.textContent = c.p.shortDate;
+        svg.appendChild(xt);
+      }
+
+      var hit = svgEl("circle", { cx:c.cx, cy:c.cy, r:14, "class":"chart-hit", tabindex:"0" });
+      hit.setAttribute("aria-label", formatDate(c.p.ts)+": "+formatTime(c.p.timeMs));
+      hit.addEventListener("pointerenter", function(){ dot.setAttribute("r",8); setReadout(c.p); });
+      hit.addEventListener("pointerleave", function(){ dot.setAttribute("r",5); setReadout(points[n-1]); });
+      hit.addEventListener("focus", function(){ dot.setAttribute("r",8); setReadout(c.p); });
+      hit.addEventListener("blur", function(){ dot.setAttribute("r",5); setReadout(points[n-1]); });
+      svg.appendChild(hit);
+    });
+
+    setReadout(points[n-1]);
+    return svg;
+  }
+
+  function renderHistoryCharts(history){
+    var wrap = document.getElementById("historyCharts");
+    wrap.innerHTML = "";
+    if(history.length===0) return;
+
+    var recent = history.slice(0, 12).slice().reverse().map(function(h){
+      return { ts:h.ts, correct:h.correct, total:h.total, accuracy:h.accuracy, timeMs:h.timeMs, shortDate:formatShortDate(h.ts) };
+    });
+
+    if(recent.length<2){
+      var only = recent[0];
+      var stats = document.createElement("div"); stats.className = "single-stats";
+      stats.innerHTML =
+        '<div class="result-tile"><span class="tile-label">Accuracy</span><span class="tile-value">'+only.accuracy+'%</span></div>'+
+        '<div class="result-tile"><span class="tile-label">Speed</span><span class="tile-value">'+formatTime(only.timeMs)+'</span></div>';
+      wrap.appendChild(stats);
+      var note = document.createElement("p"); note.className = "chart-empty-note";
+      note.textContent = "Play another sprint to see your trend over time.";
+      wrap.appendChild(note);
+      return;
+    }
+
+    var accBlock = document.createElement("div"); accBlock.className = "chart-block";
+    accBlock.innerHTML =
+      '<div class="chart-head"><span class="field-label">Accuracy</span><span class="chart-caption">Bar = correct · pale bar = questions asked</span></div>'+
+      '<p class="chart-readout" id="accReadout"></p>';
+    var accReadout = accBlock.querySelector("#accReadout");
+    accBlock.appendChild(buildAccuracyChart(recent, accReadout));
+    wrap.appendChild(accBlock);
+
+    var speedBlock = document.createElement("div"); speedBlock.className = "chart-block";
+    speedBlock.innerHTML =
+      '<div class="chart-head"><span class="field-label">Speed</span><span class="chart-caption">Total time per sprint — lower is faster</span></div>'+
+      '<p class="chart-readout" id="speedReadout"></p>';
+    var speedReadout = speedBlock.querySelector("#speedReadout");
+    speedBlock.appendChild(buildSpeedChart(recent, speedReadout));
+    wrap.appendChild(speedBlock);
+  }
+
+  var historyAccount = null;
+  var historyTab = "multiply";
+
+  function renderHistoryScreen(acc, returnTo){
+    historyReturnTo = returnTo;
+    historyAccount = acc;
+    historyTab = "multiply";
+    document.getElementById("historyName").textContent = acc.name+"'s history";
+    Array.prototype.forEach.call(document.getElementById("historyTabs").children, function(btn){
+      btn.classList.toggle("active", btn.dataset.type===historyTab);
+    });
+    renderHistoryContent();
+    showScreen("history");
+  }
+
+  function renderHistoryContent(){
+    var typeLabel = historyTab==="divide" ? "Division" : "Multiplication";
+    var history = loadHistoryFor(historyAccount.id).filter(function(h){
+      return (h.type || "Multiplication")===typeLabel;
+    });
+    var body = document.getElementById("historyBody");
+    body.innerHTML = "";
+    document.getElementById("historyEmpty").hidden = history.length>0;
+    document.getElementById("historyEmpty").textContent = "No "+typeLabel.toLowerCase()+" sprints played yet.";
+    document.getElementById("historyTable").hidden = history.length===0;
+    renderHistoryCharts(history);
+    history.forEach(function(h){
+      var tr = document.createElement("tr");
+      var tdDate = document.createElement("td");
+      tdDate.textContent = formatDate(h.ts);
+      if(h.early){
+        var note = document.createElement("span"); note.className = "history-note"; note.textContent = "ended early";
+        tdDate.appendChild(note);
+      }
+      var tdAcc = document.createElement("td"); tdAcc.textContent = h.accuracy+"%";
+      var tdSpeed = document.createElement("td"); tdSpeed.className = "mono"; tdSpeed.textContent = formatTime(h.timeMs);
+      tr.appendChild(tdDate); tr.appendChild(tdAcc); tr.appendChild(tdSpeed);
+      body.appendChild(tr);
+    });
+  }
+
+  document.getElementById("historyTabs").addEventListener("click", function(e){
+    var btn = e.target.closest ? e.target.closest("button[data-type]") : null;
+    if(!btn) return;
+    historyTab = btn.dataset.type;
+    Array.prototype.forEach.call(document.getElementById("historyTabs").children, function(b){
+      b.classList.toggle("active", b===btn);
+    });
+    renderHistoryContent();
+  });
+
+  document.getElementById("btnHistoryBack").addEventListener("click", function(){ showScreen(historyReturnTo); });
+
+  document.getElementById("btnAdminOpen").addEventListener("click", function(){
+    if(adminOpen){ adminOpen = false; renderAccountScreen(); }
+    else { openAdminPasscode(); }
+  });
+  document.getElementById("btnAdminDone").addEventListener("click", function(){
+    adminOpen = false; renderAccountScreen();
+  });
+  document.getElementById("adminAddForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var input = document.getElementById("adminAddName");
+    var name = input.value.trim();
+    if(!name) return;
+    accounts.push({id:uid(), name:name, passcode:genPasscode()});
+    saveAccounts();
+    input.value = "";
+    renderAccountScreen();
+  });
+  (function(){
+    var adminCodeInput = document.getElementById("adminPasscodeInput");
+    adminCodeInput.addEventListener("input", function(){
+      adminCodeInput.value = adminCodeInput.value.replace(/\D/g,"").slice(0,4);
+    });
+    adminCodeInput.addEventListener("keydown", function(e){
+      if(e.key==="Enter"){ e.preventDefault(); adminCodeInput.blur(); }
+    });
+    adminCodeInput.addEventListener("blur", function(){
+      var digits = adminCodeInput.value.replace(/\D/g,"").slice(0,4);
+      if(digits.length===0){ adminCodeInput.value = adminPasscode; return; }
+      digits = digits.padStart(4,"0");
+      adminPasscode = digits;
+      adminCodeInput.value = digits;
+      saveAdminPasscode();
+    });
+  })();
+
+  function updateAccountBadge(){
+    var el = document.getElementById("accountBadge");
+    el.innerHTML = "";
+    if(!currentAccount){ el.hidden = true; return; }
+    el.appendChild(document.createTextNode(currentAccount.name));
+    var btn = document.createElement("button");
+    btn.type = "button"; btn.textContent = "Switch";
+    btn.addEventListener("click", goToAccountSelect);
+    el.appendChild(btn);
+    el.hidden = false;
+  }
+
+  function goToAccountSelect(){
+    currentAccount = null;
+    adminOpen = false;
+    renderAccountScreen();
+    showScreen("account");
+  }
+
+  function enterAccount(acc){
+    currentAccount = acc;
+    document.getElementById("setupGreeting").textContent = "Practicing as "+acc.name;
+    renderHistoryStrip();
+    showScreen("setup");
+  }
+
+  // ---------- Passcode gate ----------
+  var pendingAccount = null;
+  var pendingIsAdmin = false;
+
+  function openPasscode(acc){
+    pendingAccount = acc;
+    pendingIsAdmin = false;
+    document.getElementById("passcodeName").textContent = "Enter "+acc.name+"'s passcode";
+    document.getElementById("passcodeSub").textContent = "Ask your teacher if you don't know your passcode.";
+    document.getElementById("passcodeMsg").textContent = "";
+    var input = document.getElementById("passcodeInput");
+    input.value = "";
+    showScreen("passcode");
+    input.focus();
+  }
+
+  function openAdminPasscode(){
+    pendingAccount = null;
+    pendingIsAdmin = true;
+    document.getElementById("passcodeName").textContent = "Enter admin passcode";
+    document.getElementById("passcodeSub").textContent = "This unlocks class management — accounts, passcodes, and history.";
+    document.getElementById("passcodeMsg").textContent = "";
+    var input = document.getElementById("passcodeInput");
+    input.value = "";
+    showScreen("passcode");
+    input.focus();
+  }
+
+  document.getElementById("passcodeForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var input = document.getElementById("passcodeInput");
+    var msg = document.getElementById("passcodeMsg");
+    var correct = pendingIsAdmin ? (input.value === adminPasscode) : (input.value === pendingAccount.passcode);
+    if(correct){
+      if(pendingIsAdmin){
+        pendingIsAdmin = false;
+        adminOpen = true;
+        renderAccountScreen();
+        showScreen("account");
+      } else {
+        var acc = pendingAccount;
+        pendingAccount = null;
+        enterAccount(acc);
+      }
+    } else {
+      msg.textContent = "That's not the right passcode — try again.";
+      input.value = "";
+      input.focus();
+      input.classList.remove("shake");
+      requestAnimationFrame(function(){ input.classList.add("shake"); });
+    }
+  });
+  document.getElementById("btnPasscodeBack").addEventListener("click", function(){
+    pendingAccount = null;
+    pendingIsAdmin = false;
+    showScreen("account");
+  });
+
+  // ---------- Setup screen ----------
+  var sprintType = "multiply"; // "multiply" | "divide"
+  var TYPE_LABELS = { multiply:"Multiplication", divide:"Division" };
+  var TYPE_SUB = {
+    multiply:"50 questions, from 2× to 12×. Race the clock — miss one and it comes right back around until you land it.",
+    divide:"50 questions, dividing by 2 through 12. Race the clock — miss one and it comes right back around until you land it."
+  };
+
+  function renderTypeToggle(){
+    Array.prototype.forEach.call(document.getElementById("typeToggle").children, function(btn){
+      btn.classList.toggle("active", btn.dataset.type===sprintType);
+    });
+    document.getElementById("setupSub").textContent = TYPE_SUB[sprintType];
+  }
+  document.getElementById("typeToggle").addEventListener("click", function(e){
+    var btn = e.target.closest ? e.target.closest("button[data-type]") : null;
+    if(!btn) return;
+    sprintType = btn.dataset.type;
+    renderTypeToggle();
+  });
+  renderTypeToggle();
+
+  function renderHistoryStrip(){
+    var strip = document.getElementById("historyStrip");
+    var history = loadHistoryFor(currentAccount.id);
+    if(history.length===0){
+      strip.innerHTML = "Hit start — your first sprint sets the baseline.";
+      return;
+    }
+    var last = history[0];
+    var best = null;
+    history.forEach(function(h){ if(h.accuracy===100 && (!best || h.timeMs<best.timeMs)) best = h; });
+    var html = "Last sprint ("+(last.type||"Multiplication")+"): <strong>"+last.correct+"/"+last.total+"</strong> correct in <strong>"+formatTime(last.timeMs)+"</strong>";
+    if(best) html += "<br>Personal best (clean sprint): <strong>"+formatTime(best.timeMs)+"</strong>";
+    strip.innerHTML = html;
+  }
+
+  document.getElementById("btnViewHistory").addEventListener("click", function(){
+    renderHistoryScreen(currentAccount, "setup");
+  });
+
+  document.getElementById("btnStart").addEventListener("click", function(){
+    var op = sprintType==="divide" ? "÷" : "×";
+    var pool = [];
+    FIXED_TABLES.forEach(function(a){
+      for(var b=FIXED_MULT_MIN;b<=FIXED_MULT_MAX;b++) pool.push({a:a,b:b,op:op});
+    });
+    pool = shuffle(pool);
+    var count = Math.min(FIXED_QUESTION_COUNT, pool.length);
+    startSprint(pool.slice(0, count));
+  });
+
+  // ---------- Quiz screen ----------
+  var quiz = null; // {queue, distinctTotal, factStats, streak, bestStreak, startTime, completedCount, current, shownAt}
+  var screens = {
+    account: document.getElementById("screenAccount"),
+    passcode: document.getElementById("screenPasscode"),
+    setup: document.getElementById("screenSetup"),
+    quiz: document.getElementById("screenQuiz"),
+    results: document.getElementById("screenResults"),
+    history: document.getElementById("screenHistory")
+  };
+  var equationCard = document.getElementById("equationCard");
+  var equationText = document.getElementById("equationText");
+  var answerInput = document.getElementById("answerInput");
+  var equationFeedback = document.getElementById("equationFeedback");
+  var streakNumEl = document.getElementById("streakNum");
+  var quizProgressEl = document.getElementById("quizProgress");
+  var progressFill = document.getElementById("progressFill");
+  var questionTimerEl = document.getElementById("questionTimer");
+  var timeCriticalFlash = document.getElementById("timeCriticalFlash");
+  var questionTimerHandle = null;
+
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){ screens[k].hidden = (k!==name); });
+    if(!currentAccount || name==="quiz" || name==="account"){
+      document.getElementById("accountBadge").hidden = true;
+    } else {
+      updateAccountBadge();
+    }
+  }
+
+  function startSprint(facts){
+    quiz = {
+      queue: facts.slice(),
+      distinctTotal: facts.length,
+      factStats: {},
+      streak: 0,
+      bestStreak: 0,
+      startTime: performance.now(),
+      completedCount: 0,
+      current: null,
+      shownAt: 0,
+      halfwayShown: false,
+      threeQuarterShown: false,
+      opType: facts.length ? facts[0].op : "×"
+    };
+    showScreen("quiz");
+    nextQuestion();
+  }
+
+  function factKey(f){ return f.op+f.a+"x"+f.b; }
+  function factAnswer(f){ return f.op==="÷" ? f.b : f.a*f.b; }
+  function factDisplay(f){ return f.op==="÷" ? (f.a*f.b)+" ÷ "+f.a : f.a+" × "+f.b; }
+
+  function showMilestone(text){
+    var fx = document.getElementById("halfwayFx");
+    fx.querySelector(".halfway-text").textContent = text;
+    fx.hidden = false;
+    requestAnimationFrame(function(){ fx.classList.add("show"); });
+    setTimeout(function(){
+      fx.classList.remove("show");
+      setTimeout(function(){ fx.hidden = true; }, 300);
+    }, 1100);
+  }
+
+  function tickQuestionTimer(){
+    if(!quiz) return;
+    quiz.timeLeft--;
+    questionTimerEl.textContent = Math.max(quiz.timeLeft, 0);
+    if(quiz.timeLeft<=TIME_CRITICAL_AT && quiz.timeLeft>0){
+      timeCriticalFlash.classList.add("active");
+    }
+    if(quiz.timeLeft<=0){
+      clearInterval(questionTimerHandle);
+      submitAnswer(NaN);
+    }
+  }
+
+  function nextQuestion(){
+    clearInterval(questionTimerHandle);
+    if(quiz.queue.length===0){ finishSprint(false); return; }
+    quiz.current = quiz.queue.shift();
+    equationText.textContent = factDisplay(quiz.current);
+    equationFeedback.textContent = "";
+    equationFeedback.className = "equation-feedback";
+    equationCard.classList.remove("flash-good","flash-bad");
+    timeCriticalFlash.classList.remove("active");
+    var halfwayFx = document.getElementById("halfwayFx");
+    halfwayFx.classList.remove("show");
+    halfwayFx.hidden = true;
+    answerInput.value = "";
+    answerInput.disabled = false;
+    answerInput.focus();
+    quiz.shownAt = performance.now();
+    quiz.timeLeft = QUESTION_TIME_LIMIT;
+    questionTimerEl.textContent = QUESTION_TIME_LIMIT;
+    questionTimerHandle = setInterval(tickQuestionTimer, 1000);
+    quizProgressEl.textContent = Math.min(quiz.completedCount+1, quiz.distinctTotal)+" / "+quiz.distinctTotal;
+    progressFill.style.width = (100*quiz.completedCount/quiz.distinctTotal)+"%";
+  }
+
+  function submitAnswer(given){
+    if(!quiz || answerInput.disabled) return;
+    clearInterval(questionTimerHandle);
+    timeCriticalFlash.classList.remove("active");
+    var f = quiz.current;
+    var key = factKey(f);
+    var responseMs = performance.now()-quiz.shownAt;
+    var correctAnswer = factAnswer(f);
+    if(!quiz.factStats[key]) quiz.factStats[key] = { attempts:0, wrong:0, correctTime:null };
+    var stats = quiz.factStats[key];
+    stats.attempts++;
+    answerInput.disabled = true;
+
+    if(given===correctAnswer){
+      stats.correctTime = responseMs;
+      quiz.streak++;
+      quiz.bestStreak = Math.max(quiz.bestStreak, quiz.streak);
+      quiz.completedCount++;
+      streakNumEl.textContent = quiz.streak;
+      equationCard.classList.add("flash-good");
+      var praise = PRAISE_WORDS[Math.floor(Math.random()*PRAISE_WORDS.length)];
+      equationFeedback.textContent = praise;
+      equationFeedback.className = "equation-feedback fb-show fb-good";
+      var hitThreeQuarter = !quiz.threeQuarterShown && quiz.completedCount===Math.floor(quiz.distinctTotal*0.75);
+      var hitHalfway = !quiz.halfwayShown && quiz.completedCount===Math.floor(quiz.distinctTotal/2);
+      if(hitThreeQuarter){
+        quiz.threeQuarterShown = true;
+        showMilestone("Almost there!");
+        setTimeout(nextQuestion, 1400);
+      } else if(hitHalfway){
+        quiz.halfwayShown = true;
+        showMilestone("Halfway there!");
+        setTimeout(nextQuestion, 1400);
+      } else {
+        setTimeout(nextQuestion, 380);
+      }
+    } else {
+      stats.wrong++;
+      quiz.streak = 0;
+      streakNumEl.textContent = "0";
+      equationCard.classList.add("flash-bad");
+      equationFeedback.textContent = "Correct solution: "+correctAnswer;
+      equationFeedback.className = "equation-feedback fb-show fb-bad";
+      quiz.queue.push({a:f.a, b:f.b, op:f.op});
+      setTimeout(nextQuestion, 900);
+    }
+  }
+
+  document.getElementById("answerForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    if(!quiz || answerInput.disabled) return;
+    submitAnswer(parseInt(answerInput.value, 10));
+  });
+
+  document.getElementById("btnEndEarly").addEventListener("click", function(){ finishSprint(true); });
+
+  // ---------- Results screen ----------
+  function finishSprint(early){
+    clearInterval(questionTimerHandle);
+    timeCriticalFlash.classList.remove("active");
+    var totalTimeMs = performance.now()-quiz.startTime;
+    var keys = Object.keys(quiz.factStats);
+    var attempted = keys.length;
+
+    var typeLabel = TYPE_LABELS[quiz.opType==="÷" ? "divide" : "multiply"];
+    document.getElementById("resultsEyebrow").textContent = typeLabel+(early ? " sprint ended early" : " sprint complete");
+    document.getElementById("resultsTime").textContent = formatTime(totalTimeMs);
+
+    if(attempted===0){
+      document.getElementById("resAccuracy").textContent = "—";
+      document.getElementById("resAvg").textContent = "—";
+      document.getElementById("resStreak").textContent = "0";
+      document.getElementById("weakChips").innerHTML = "";
+      document.getElementById("weakSection").hidden = true;
+      document.getElementById("allClearMsg").hidden = true;
+      document.getElementById("btnPracticeWeak").hidden = true;
+      showScreen("results");
+      return;
+    }
+
+    var cleanCount = 0, weak = [];
+    keys.forEach(function(k){
+      var st = quiz.factStats[k];
+      var op = k.charAt(0);
+      var parts = k.slice(1).split("x");
+      var fact = { a:parseInt(parts[0],10), b:parseInt(parts[1],10), op:op };
+      var slow = st.correctTime!==null && st.correctTime>2000;
+      if(st.wrong===0) cleanCount++;
+      if(st.wrong>0 || slow) weak.push({ fact:fact, wrong:st.wrong, time: st.correctTime||99999 });
+    });
+    weak.sort(function(x,y){ return y.wrong-x.wrong || y.time-x.time; });
+
+    var accuracy = Math.round(100*cleanCount/attempted);
+    document.getElementById("resAccuracy").textContent = accuracy+"%";
+    document.getElementById("resAvg").textContent = (totalTimeMs/attempted/1000).toFixed(1)+"s";
+    document.getElementById("resStreak").textContent = quiz.bestStreak;
+
+    var weakSection = document.getElementById("weakSection");
+    var allClear = document.getElementById("allClearMsg");
+    var practiceBtn = document.getElementById("btnPracticeWeak");
+    if(weak.length===0){
+      weakSection.hidden = true; allClear.hidden = false; practiceBtn.hidden = true;
+    } else {
+      weakSection.hidden = false; allClear.hidden = true; practiceBtn.hidden = false;
+      document.getElementById("weakChips").innerHTML = weak.map(function(w){
+        return '<span class="weak-chip">'+factDisplay(w.fact)+'</span>';
+      }).join("");
+      practiceBtn.onclick = function(){ startSprint(shuffle(weak.map(function(w){ return w.fact; }))); };
+    }
+
+    saveHistory({ ts:Date.now(), timeMs:totalTimeMs, accuracy:accuracy, correct:cleanCount, total:attempted, bestStreak:quiz.bestStreak, early:early, type:typeLabel });
+    showScreen("results");
+  }
+
+  document.getElementById("btnNewSprint").addEventListener("click", function(){
+    renderHistoryStrip();
+    showScreen("setup");
+  });
+
+  renderAccountScreen();
+  showScreen("account");
+})();
+</script>
+
+</body></html>
